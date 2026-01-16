@@ -25,44 +25,59 @@ interface Student {
 
 const moduleData = [
   {
+    number: 0,
+    title: 'Introduction',
+    description: 'Welcome to CyberMoe Academy and course overview'
+  },
+  {
     number: 1,
     title: 'Federal Cybersecurity Fundamentals',
     description: 'FISMA, NIST frameworks, and the federal cybersecurity landscape'
   },
   {
     number: 2,
-    title: 'Risk Management Framework (RMF)',
+    title: 'RMF Mastery',
     description: 'Complete RMF lifecycle from categorization to authorization'
   },
   {
     number: 3,
-    title: 'Security Assessment & Authorization',
-    description: 'SA&A process, SSP development, and security controls'
-  },
-  {
-    number: 4,
     title: 'Vulnerability Management & ACAS',
     description: 'ACAS, Tenable Security Center, and vulnerability remediation'
   },
   {
+    number: 4,
+    title: 'eMASS and GRC Tools',
+    description: 'Hands-on with eMASS and governance, risk, compliance tools'
+  },
+  {
     number: 5,
-    title: 'Plan of Action & Milestones',
-    description: 'POA&M creation, tracking, and lifecycle management'
+    title: 'Security Control Assessment',
+    description: 'Assessing controls, gathering evidence, and documenting findings'
   },
   {
     number: 6,
-    title: 'Continuous Monitoring',
-    description: 'ConMon strategies, ISCM, and ongoing authorization'
+    title: 'POA&M Management',
+    description: 'POA&M creation, tracking, and lifecycle management'
   },
   {
     number: 7,
+    title: 'AI Security',
+    description: 'AI threats, NIST AI RMF, and securing AI systems'
+  },
+  {
+    number: 8,
+    title: 'Incident Response',
+    description: 'Incident handling, classification, and federal reporting'
+  },
+  {
+    number: 9,
     title: 'FedRAMP & Cloud Security',
     description: 'FedRAMP authorization process and cloud security controls'
   },
   {
-    number: 8,
+    number: 10,
     title: 'Career Development',
-    description: 'Interview prep, resume building, and job search strategies'
+    description: 'Resume building, interviews, and landing your ISSO role'
   }
 ]
 
@@ -78,7 +93,6 @@ export default function StudentDashboard() {
 
   const checkAuth = async () => {
     try {
-      // Check auth and get student info
       const authRes = await fetch('/api/auth/student/check')
       if (!authRes.ok) {
         router.push('/login')
@@ -87,7 +101,6 @@ export default function StudentDashboard() {
       const studentData = await authRes.json()
       setStudent(studentData.student)
 
-      // Get progress
       const progressRes = await fetch('/api/progress')
       if (progressRes.ok) {
         const progressData = await progressRes.json()
@@ -106,10 +119,17 @@ export default function StudentDashboard() {
   }
 
   const getNextModule = () => {
-    if (!progress?.modules) return 1
-    const incomplete = progress.modules.find(m => !m.completed)
-    return incomplete?.module_number || 1
+    // For now, return module 0 as starting point
+    // Can be enhanced to track actual progress
+    return 0
   }
+
+  const calculateProgress = () => {
+    // Placeholder - will be enhanced with actual progress tracking
+    return { completed: 0, total: 11, percent: 0 }
+  }
+
+  const progressStats = calculateProgress()
 
   if (loading) {
     return (
@@ -177,7 +197,7 @@ export default function StudentDashboard() {
           color: var(--danger);
         }
         .main {
-          max-width: 1200px;
+          max-width: 1400px;
           margin: 0 auto;
           padding: 2rem;
         }
@@ -263,7 +283,7 @@ export default function StudentDashboard() {
         }
         .modules-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
           gap: 1rem;
         }
         .module-card {
@@ -287,8 +307,8 @@ export default function StudentDashboard() {
           opacity: 0.8;
         }
         .module-number {
-          width: 40px;
-          height: 40px;
+          width: 44px;
+          height: 44px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -302,12 +322,17 @@ export default function StudentDashboard() {
           background: var(--success);
           color: var(--bg-primary);
         }
+        .module-content {
+          flex: 1;
+        }
         .module-content h4 {
           margin-bottom: 0.25rem;
+          font-size: 1rem;
         }
         .module-content p {
           font-size: 0.875rem;
           color: var(--text-muted);
+          line-height: 1.4;
         }
         .module-status {
           margin-top: 0.5rem;
@@ -321,6 +346,17 @@ export default function StudentDashboard() {
         .module-status.in-progress {
           color: var(--accent-secondary);
         }
+        .tier-badge {
+          display: inline-block;
+          padding: 0.25rem 0.75rem;
+          background: var(--accent-glow);
+          color: var(--accent-primary);
+          border-radius: 100px;
+          font-size: 0.7rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-left: 0.5rem;
+        }
       `}</style>
 
       <header className="header">
@@ -331,8 +367,11 @@ export default function StudentDashboard() {
         </div>
         <div className="header-right">
           <div className="user-info">
-            <div className="user-name">{student?.name}</div>
-            <div className="user-tier">{student?.tier} tier</div>
+            <div className="user-name">
+              {student?.name}
+              <span className="tier-badge">{student?.tier}</span>
+            </div>
+            <div className="user-tier">{student?.email}</div>
           </div>
           <button className="logout-btn" onClick={handleLogout}>
             Sign Out
@@ -357,22 +396,22 @@ export default function StudentDashboard() {
                   cy="50"
                   r="42"
                   strokeDasharray={`${2 * Math.PI * 42}`}
-                  strokeDashoffset={`${2 * Math.PI * 42 * (1 - (progress?.percent || 0) / 100)}`}
+                  strokeDashoffset={`${2 * Math.PI * 42 * (1 - progressStats.percent / 100)}`}
                 />
               </svg>
-              <div className="progress-ring-text">{progress?.percent || 0}%</div>
+              <div className="progress-ring-text">{progressStats.percent}%</div>
             </div>
             <div className="progress-info">
-              <h3>{progress?.completed || 0} of {progress?.total || 8} Modules</h3>
+              <h3>{progressStats.completed} of {progressStats.total} Modules</h3>
               <p>Keep up the great work!</p>
             </div>
           </div>
 
           <div className="stat-card continue-card">
-            <h3>Continue Learning</h3>
-            <p>Module {getNextModule()}: {moduleData[getNextModule() - 1]?.title}</p>
+            <h3>Start Learning</h3>
+            <p>Module {getNextModule()}: {moduleData[getNextModule()]?.title}</p>
             <Link href={`/course/module-${getNextModule()}`} className="btn btn-primary">
-              Continue →
+              Begin Course →
             </Link>
           </div>
         </div>
@@ -381,8 +420,7 @@ export default function StudentDashboard() {
           <h2>Course Modules</h2>
           <div className="modules-grid">
             {moduleData.map((module) => {
-              const moduleProgress = progress?.modules?.find(m => m.module_number === module.number)
-              const isCompleted = moduleProgress?.completed || false
+              const isCompleted = false // Will be enhanced with actual progress
 
               return (
                 <Link
