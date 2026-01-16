@@ -289,6 +289,36 @@ export default function StudentDetailPage() {
           font-family: var(--font-display);
           cursor: pointer;
         }
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.8);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
+        .modal {
+          background: var(--bg-card);
+          border: 1px solid var(--border-color);
+          border-radius: 12px;
+          padding: 2rem;
+          width: 100%;
+          max-width: 450px;
+        }
+        .modal h2 {
+          color: var(--danger);
+          margin-bottom: 1rem;
+        }
+        .modal p {
+          margin-bottom: 1.5rem;
+          color: var(--text-secondary);
+        }
+        .modal-btn-row {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
       `}</style>
 
       <Link href="/admin/students" className="back-link">
@@ -434,44 +464,12 @@ export default function StudentDetailPage() {
       {showRevokeModal && (
         <div className="modal-overlay" onClick={() => setShowRevokeModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <style jsx>{`
-              .modal-overlay {
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.8);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1000;
-              }
-              .modal {
-                background: var(--bg-card);
-                border: 1px solid var(--border-color);
-                border-radius: 12px;
-                padding: 2rem;
-                width: 100%;
-                max-width: 450px;
-              }
-              .modal h2 {
-                color: var(--danger);
-                margin-bottom: 1rem;
-              }
-              .modal p {
-                margin-bottom: 1.5rem;
-                color: var(--text-secondary);
-              }
-              .btn-row {
-                display: flex;
-                flex-direction: column;
-                gap: 0.75rem;
-              }
-            `}</style>
             <h2>⚠️ Revoke Access</h2>
             <p>
               This will immediately prevent {student.name} from accessing the course materials.
               Do you also want to cancel their Stripe subscription?
             </p>
-            <div className="btn-row">
+            <div className="modal-btn-row">
               <button
                 className="btn btn-danger"
                 onClick={() => handleRevokeAccess(true)}
